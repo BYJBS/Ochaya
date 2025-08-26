@@ -77,7 +77,6 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-let currentAudio = null;
 let timerInterval = null;
 let timeLeft = 0;
 let totalTime = 0;
@@ -189,39 +188,28 @@ function completeTimer(){
   resetTimer();
 }
 
-// Sounds
-const sounds = {
-  rain:'https://www.soundjay.com/nature/rain-01.mp3',
-  forest:'D:\spring-forest-nature-332842.mp3',
-  water:'https://www.soundjay.com/nature/water-bubbling-1.mp3'
+// Sounds - แก้ให้แต่ละเสียงแยกตัว
+const audioPlayers = {
+  rain: new Audio('https://www.soundjay.com/nature/rain-01.mp3'),
+  forest: new Audio('https://www.soundjay.com/nature/forest-1.mp3'),
+  water: new Audio('https://www.soundjay.com/nature/water-1.mp3')
 };
+Object.values(audioPlayers).forEach(a=>{
+  a.loop = true;
+  a.volume = 0.5;
+});
 
 function playSound(type){
-  if(currentAudio && currentAudio.src.includes(sounds[type])){
-    currentAudio.pause();
-    currentAudio = null;
-    resetSoundButtons();
-    return;
+  const audio = audioPlayers[type];
+  if(audio.paused){
+    audio.play();
+    document.getElementById(type+'-btn').innerText='⏹️ หยุด';
+  } else {
+    audio.pause();
+    audio.currentTime = 0;
+    document.getElementById(type+'-btn').innerText = 
+      type==='rain'?'🌧️ เสียงฝน':type==='forest'?'🍃 เสียงป่า':'🫖 เสียงน้ำเดือด';
   }
-  if(currentAudio){
-    currentAudio.pause();
-    currentAudio = null;
-    resetSoundButtons();
-  }
-  currentAudio = new Audio(sounds[type]);
-  currentAudio.loop=true;
-  currentAudio.volume=0.5;
-  currentAudio.play();
-  document.getElementById(type+'-btn').innerText='⏹️ หยุด';
-}
-
-function resetSoundButtons(){
-  ['rain','forest','water'].forEach(t=>{
-    const btn = document.getElementById(t+'-btn');
-    if(t==='rain') btn.innerText='🌧️ เสียงฝน';
-    else if(t==='forest') btn.innerText='🍃 เสียงป่า';
-    else btn.innerText='🫖 เสียงน้ำเดือด';
-  });
 }
 
 // Auto-load if user is already logged in
@@ -231,5 +219,3 @@ auth.onAuthStateChanged(user=>{
 </script>
 </body>
 </html>
-
-
