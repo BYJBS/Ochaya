@@ -192,21 +192,35 @@ function completeTimer(){
 // Sounds
 const sounds = {
   rain:'https://www.soundjay.com/nature/rain-01.mp3',
-  forest:'https://www.soundjay.com/nature/forest-1.mp3',
-  water:'https://www.soundjay.com/nature/water-1.mp3'
+  forest:'https://www.soundjay.com/nature/forest-ambience-1.mp3',
+  water:'https://www.soundjay.com/nature/water-bubbling-1.mp3'
 };
+
 function playSound(type){
-  if(currentAudio){currentAudio.pause();currentAudio=null;resetSoundButtons();}
-  if(currentAudio && currentAudio.src===sounds[type]) return;
-  currentAudio=new Audio(sounds[type]);
+  if(currentAudio && currentAudio.src.includes(sounds[type])){
+    currentAudio.pause();
+    currentAudio = null;
+    resetSoundButtons();
+    return;
+  }
+  if(currentAudio){
+    currentAudio.pause();
+    currentAudio = null;
+    resetSoundButtons();
+  }
+  currentAudio = new Audio(sounds[type]);
   currentAudio.loop=true;
   currentAudio.volume=0.5;
   currentAudio.play();
   document.getElementById(type+'-btn').innerText='⏹️ หยุด';
 }
+
 function resetSoundButtons(){
   ['rain','forest','water'].forEach(t=>{
-    document.getElementById(t+'-btn').innerText=document.getElementById(t+'-btn').innerText.replace('⏹️ หยุด',t==='rain'?'🌧️ เสียงฝน':t==='forest'?'🍃 เสียงป่า':'🫖 เสียงน้ำเดือด');
+    const btn = document.getElementById(t+'-btn');
+    if(t==='rain') btn.innerText='🌧️ เสียงฝน';
+    else if(t==='forest') btn.innerText='🍃 เสียงป่า';
+    else btn.innerText='🫖 เสียงน้ำเดือด';
   });
 }
 
@@ -217,3 +231,4 @@ auth.onAuthStateChanged(user=>{
 </script>
 </body>
 </html>
+
